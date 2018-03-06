@@ -530,7 +530,20 @@ def processAlignment(f_in,report_dir):
 		rev_inv_dict = {inv_dict[k]:k for k in inv_dict.keys()}
 		print 'inv_dict:',inv_dict
 		print 'rev_inv_dict:',rev_inv_dict
-		print strings_for_msa
+		print 'strings_for_msa:',strings_for_msa,'-->',
+		# remove strings that are subsets of other strings, for efficiency..
+		strings_for_msa = list(set(strings_for_msa))
+		if len(strings_for_msa) > 1:
+			delList = []
+			for i in xrange(len(strings_for_msa)):
+				for j in xrange(i+1,len(strings_for_msa)):
+					if strings_for_msa[i] in strings_for_msa[j]:
+						if len(strings_for_msa[i]) < len(strings_for_msa[j]):
+							delList.append(i)
+						else:
+							delList.append(j)
+			print sorted(list(set(delList)),reverse=True)
+			exit(1)
 
 		# if only 1 string is present, no need to do any fancy MSA steps
 		sorted_events_final = []
