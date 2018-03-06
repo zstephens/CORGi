@@ -537,11 +537,10 @@ def processAlignment(f_in,report_dir):
 			delList = []
 			for i in xrange(len(strings_for_msa)):
 				for j in xrange(i+1,len(strings_for_msa)):
-					if strings_for_msa[i] in strings_for_msa[j]:
-						if len(strings_for_msa[i]) < len(strings_for_msa[j]):
-							delList.append(i)
-						else:
-							delList.append(j)
+					if strings_for_msa[i] in strings_for_msa[j] and len(strings_for_msa[i]) < len(strings_for_msa[j]):
+						delList.append(i)
+					if strings_for_msa[j] in strings_for_msa[i] and len(strings_for_msa[j]) < len(strings_for_msa[i]):
+						delList.append(j)
 			print sorted(list(set(delList)),reverse=True)
 			exit(1)
 
