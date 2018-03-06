@@ -530,9 +530,9 @@ def processAlignment(f_in,report_dir):
 		rev_inv_dict = {inv_dict[k]:k for k in inv_dict.keys()}
 		print 'inv_dict:',inv_dict
 		print 'rev_inv_dict:',rev_inv_dict
+		strings_for_msa = list(set(strings_for_msa))
 		print 'strings_for_msa:',strings_for_msa,'-->',
 		# remove strings that are subsets of other strings, for efficiency..
-		strings_for_msa = list(set(strings_for_msa))
 		if len(strings_for_msa) > 1:
 			delList = []
 			for i in xrange(len(strings_for_msa)):
