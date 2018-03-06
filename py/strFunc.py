@@ -56,6 +56,8 @@ def get_path_strings(full_path_data, region_map, MAX_PRE_CLUSTER_DIST):
 				if myInd > region_map[k][1] and myInd <= region_map[k][2]:
 					myR_span = k
 					break
+				elif myInd == region_map[k][1] and myInd <= region_map[k][2] and k >= 1:
+					myR_span = k-1
 			rInds = range(myR_start,myR_span+1)
 			#print 'rInds:',myR_start,myR_span+1,rInds
 			if isForward == False:

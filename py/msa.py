@@ -121,6 +121,8 @@ def msa_consensus(sequences):
 	if len(sequences) == 1:
 		return sequences[0]
 	msa_result = msa_optimal(sequences)
+	print msa_result
+	exit(1)
 	consensus  = []
 	for j in xrange(len(msa_result[0])):
 		col = [msa_result[i][j] for i in xrange(len(msa_result))]
