@@ -116,13 +116,74 @@ def msa_optimal(sequences):
 
 	return msa_output
 
+# nw alignment
+def needleman_wunsch(mismatch, gap, sequence1, sequence2):
+	n = len(sequence1)
+	m = len(sequence2)
+	subproblems = [[0 for x in range(m+1)] for x in range(n+1)]
+	for i in range(n+1):
+		subproblems[i][0] = i * gap
+	for j in range(m+1):
+		subproblems[0][j] = j * gap
+
+	for i in range(1, n+1):
+		for j in range(1, m+1):
+			case1 = subproblems[i-1][j-1]
+			if sequence1[i-1] != sequence2[j-1]:
+				case1 += mismatch
+			case2 = subproblems[i-1][j] + gap
+			case3 = subproblems[i][j-1] + gap
+			subproblems[i][j] = min([case1, case2, case3])
+	penalty = subproblems[n][m]
+
+	# Backtrace
+	alignment1 = ""
+	alignment2 = ""
+	i = n
+	j = m
+	while i > 0 or j > 0:
+		pos = subproblems[i][j]
+		case1_match = subproblems[i-1][j-1]
+		case1_mismatch = case1_match + mismatch
+		case2 = subproblems[i-1][j] + gap
+		case3 = subproblems[i][j-1] + gap
+		if i > 0 and pos == case1_match:
+			alignment1 = sequence1[i-1] + alignment1
+			alignment2 = sequence2[j-1] + alignment2
+			i -= 1
+			j -= 1
+		elif i > 0 and pos == case1_mismatch:
+			alignment1 = sequence1[i-1] + alignment1
+			alignment2 = sequence2[j-1] + alignment2
+			i -= 1
+			j -= 1
+		elif i > 0 and pos == case2:
+			alignment1 = sequence1[i-1] + alignment1
+			alignment2 = GAP_CHR + alignment2
+			i -= 1
+		elif j > 0 and pos == case3:
+			alignment1 = GAP_CHR + alignment1
+			alignment2 = sequence2[j-1] + alignment2
+			j -= 1
+	return (penalty, alignment1, alignment2)
+
+##### a much sloppier version of MSA
+####def msa_sloppy_consensus(sequences):
+####	seq_sort = [m[1] for m in sorted([(len(n),n) for n in sequences],reverse=True)]
+####	print seq_sort
+####	cons = msa_consensus(seq_sort[0:2])
+####	print cons
+####	for i in xrange(2,len(seq_sort)):
+####		inS  = ''.join([n[0] for n in cons])
+####		cons = msa_consensus([inS,seq_sort[i]])
+####		print cons
+
 # get consensus sequence via MSA
 def msa_consensus(sequences):
 	if len(sequences) == 1:
 		return sequences[0]
 	msa_result = msa_optimal(sequences)
-	print msa_result
-	exit(1)
+	#print msa_result
 	consensus  = []
 	for j in xrange(len(msa_result[0])):
 		col = [msa_result[i][j] for i in xrange(len(msa_result))]
@@ -142,10 +203,16 @@ if __name__ == '__main__':
 		   'ATCAGGAATGAATCC',
 		   'TCACGATTGAATCGC',
 		   'TCAGGAATGAATCGCM']
-	#seq = seq[2:5]
+	seq = seq[0:1]+seq[2:4]
+
+	seq = ['BCDEFCDDEFG','CDDEFG','CDDE','HABCDEFCDDE','HABCDEFCDDEFG']
 
 	msa = msa_optimal(seq)
-
 	for n in msa:
 		print n
+
+	print 'optimal:'
+	print msa_consensus(seq)
+	#print 'sloppy:'
+	#print msa_sloppy_consensus(seq)
 
