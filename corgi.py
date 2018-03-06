@@ -540,6 +540,7 @@ def processAlignment(f_in,report_dir):
 					if i == j:
 						continue
 					if strings_for_msa[i] in strings_for_msa[j] and len(strings_for_msa[i]) < len(strings_for_msa[j]):
+						print '_',(i,j), strings_for_msa[i], strings_for_msa[j]
 						delList.append(i)
 			print sorted(list(set(delList)),reverse=True)
 			exit(1)
