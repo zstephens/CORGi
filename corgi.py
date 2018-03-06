@@ -56,6 +56,7 @@ CORGI_CFG = SIM_PATH+'/corgi.cfg'
 BLASTALL = getConfigVal(CORGI_CFG,'BLASTALL','str')
 FORMATDB = getConfigVal(CORGI_CFG,'FORMATDB','str')
 SAMTOOLS = getConfigVal(CORGI_CFG,'SAMTOOLS','str')
+IGV_PATH = getConfigVal(CORGI_CFG,'IGV','str')
 # FILTERING PARAMETERS
 MIN_CLIP_LEN = getConfigVal(CORGI_CFG,'MIN_CLIP_LEN','int')
 RLEN_MIN     = getConfigVal(CORGI_CFG,'RLEN_MIN','int')
@@ -640,7 +641,7 @@ def main():
 	if OUT_DIR[-1] != '/':
 		OUT_DIR += '/'
 	makedir(OUT_DIR)
-	OUT_DIR   += 'longReadExp_'+CHROM+'_'+str(POS_S)+'_'+str(POS_E)+'/'
+	OUT_DIR   += 'corgi_'+CHROM+'_'+str(POS_S)+'_'+str(POS_E)+'/'
 	TEMP_DIR  = OUT_DIR
 	makedir(TEMP_DIR)
 
@@ -660,7 +661,7 @@ def main():
 		tempF1_f1 = TEMP_DIR+'allReads_withClip.sam'
 		tempF1_f2 = TEMP_DIR+'allReads_filtered.sam'
 		tempF1_f3 = TEMP_DIR+'allReads_filtered2.sam'
-		filterSamByClipContent(tempF1,tempF1_f1,MIN_CLIP_LEN)
+		filterSamByClipContent(tempF1,tempF1_f1,MIN_CLIP_LEN,indelLen=MIN_ALN_LEN)
 		filterSamByRefOverlap(tempF1_f1,tempF1_f2,POS_S,POS_E)
 		filterSamByReadLen(tempF1_f2,tempF1_f3,rMin=RLEN_MIN)
 
@@ -677,7 +678,7 @@ def main():
 	#
 	if PROCESS_IGV:
 		print 'grabbing alignment screenshot...'
-		view_IGV(INPUT_BAM,CHROM,POS_S,POS_E,screenShotDir=OUT_DIR)
+		view_IGV(IGV_PATH,REF_FILE,INPUT_BAM,CHROM,POS_S,POS_E,screenShotDir=OUT_DIR)
 	#exit(1)
 	print 'analyzing reads...'
 	RESOURCE_DIR = OUT_DIR+'resources/'

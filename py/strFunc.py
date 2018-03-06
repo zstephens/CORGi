@@ -211,8 +211,15 @@ def interpret_rearrangement(ref,samp,novel=[]):
 						for j in xrange(1,len(myRef)):
 							myCopy = [n for n in myRef]
 							myCopy = myCopy[:j] + myRegion + myCopy[j:]
+							dup_prefix = (myRegion[0][-1]=='*')*'inv-'
+							if j == i or j == i+regionLen:
+								dup_suffix = 'tdup'
+							elif j < i or j > i+regionLen:
+								dup_suffix = 'ddup'
+							else:
+								dup_suffix = 'dup'
 							if ref_dist(myCopy,samp) < current_dist:
-								newPath = myPath + [((myRegion[0][-1]=='*')*'inv-'+'dup',(j,myRegion))]
+								newPath = myPath + [(dup_prefix+dup_suffix,(j,myRegion))]
 								if myCopy == samp:
 									queue = [n for n in queue if len(n[1]) < MAX_DEPTH]
 									allPaths.append([n for n in newPath])
@@ -253,7 +260,7 @@ def interpret_rearrangement(ref,samp,novel=[]):
 					isDependentOn[i] = alteredOnTurn[path[i][1][0]:path[i][1][1]]
 					for j in xrange(path[i][1][0],path[i][1][1]):
 						alteredOnTurn[j] = i+1
-				elif path[i][0] == 'ins' or path[i][0] == 'dup' or path[i][0] == 'inv-dup':
+				elif path[i][0] == 'ins' or 'dup' in path[i][0]:
 					isDependentOn[i] = [min(alteredOnTurn[path[i][1][0]-1:path[i][1][0]+1])]
 					alteredOnTurn = alteredOnTurn[:path[i][1][0]] + [i+1 for n in path[i][1][1]] + alteredOnTurn[path[i][1][0]:]
 			all_refAlterCount.append([item for sublist in isDependentOn for item in sublist].count(0))

@@ -72,13 +72,14 @@ def writeRefSection(refFile, chrom, samPos_s, samPos_e, fn):
 	f.write('>refSeq_'+chrom+'_'+str(samPos_s)+'_'+str(samPos_e)+'\n'+refChunk+'\n')
 	f.close()
 
-def filterSamByClipContent(sam_in,sam_out,minClip,allow_hard=False):
+def filterSamByClipContent(sam_in,sam_out,minClip,allow_hard=False,indelLen=None):
 	fi = open(sam_in,'r')
 	fo = open(sam_out,'w')
 	CLIP_CHAR = 'S'
 	if allow_hard:
 		CLIP_CHAR += 'H'
 	for line in fi:
+		pleaseWriteOut = False
 		s = line.split('\t')[5]
 		letters = re.split(r"\d+",s)[1:]
 		numbers = [int(n) for n in re.findall(r"\d+",s)]
@@ -88,6 +89,13 @@ def filterSamByClipContent(sam_in,sam_out,minClip,allow_hard=False):
 			continue
 		#print letters, numbers
 		if (letters[0] in CLIP_CHAR and numbers[0] >= minClip) or (letters[-1] in CLIP_CHAR and numbers[-1] >= minClip):
+			pleaseWriteOut = True
+		if indelLen != None:
+			for i in xrange(len(letters)):
+				if (letters[i] == 'D' or letters[i] == 'I') and (numbers[i] >= indelLen):
+					pleaseWriteOut = True
+					break
+		if pleaseWriteOut:
 			fo.write(line)
 	fo.close()
 	fi.close()
@@ -144,14 +152,15 @@ def readBlastLine(line):
 	splt = line.strip().split('\t')
 	return (splt[0],int(splt[3]),int(splt[6]),int(splt[7]),int(splt[8]),int(splt[9]),float(splt[10]),float(splt[11]))
 
-IGV_EXE      = 'java -Xmx1500m -jar /Volumes/Epoch9/tools/IGV_2.3.57/igv.jar'
+IGV_EXE      = 'java -Xmx1500m -jar '
 TEMP_IGV     = 'temp_igv_batch.txt'
 TEMP_IGLOG   = 'temp_igvLog.txt'
-def view_IGV(in_bam,chrom,ind_s,ind_e,screenShotDir=None):
+def view_IGV(igv_path,in_ref,in_bam,chrom,ind_s,ind_e,screenShotDir=None):
 	igvStr    = 'load '+in_bam+'\n'
 	if screenShotDir != None:
 		igvStr   += 'snapshotDirectory '+screenShotDir+'\n'
-	igvStr   += 'genome hg19\n'
+	#igvStr   += 'genome hg19\n'
+	igvStr   += 'genome '+in_ref+'\n'
 	igvStr   += 'goto '+chrom+':'+str(ind_s)+'-'+str(ind_e)+'\n'
 	#igvStr   += 'viewaspairs\n'
 	#igvStr   += 'sort insert\n'
@@ -160,7 +169,7 @@ def view_IGV(in_bam,chrom,ind_s,ind_e,screenShotDir=None):
 		igvStr   += 'snapshot\n'
 		igvStr   += 'exit\n'
 	openWriteClose(TEMP_IGV,igvStr)
-	igvCMD = IGV_EXE + ' -b ' + TEMP_IGV + ' > ' + TEMP_IGLOG + ' 2>&1'
+	igvCMD = IGV_EXE + igv_path + ' -b ' + TEMP_IGV + ' > ' + TEMP_IGLOG + ' 2>&1'
 	exe(igvCMD)
 	rm(TEMP_IGV)
 	rm(TEMP_IGLOG)
