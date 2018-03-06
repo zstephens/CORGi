@@ -545,7 +545,6 @@ def processAlignment(f_in,report_dir):
 			for i in delList:
 				del strings_for_msa[i]
 		print strings_for_msa
-		exit(1)
 
 		# if only 1 string is present, no need to do any fancy MSA steps
 		sorted_events_final = []
