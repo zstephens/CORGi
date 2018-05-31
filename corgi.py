@@ -639,7 +639,7 @@ def main():
 
 	#	Parse input arguments
 	#
-	parser = argparse.ArgumentParser(description='plotLongRead5.py')
+	parser = argparse.ArgumentParser(description='corgi.py')
 	parser.add_argument('-r', type=str, required=True,  metavar='<str>',                    help="* ref.fa")
 	parser.add_argument('-b', type=str, required=True,  metavar='<str>',                    help="* input.bam")
 	parser.add_argument('-c', type=str, required=True,  metavar='<str>',                    help="* chromosome")
