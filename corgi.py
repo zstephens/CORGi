@@ -697,7 +697,7 @@ def main():
 	print 'analyzing reads...'
 	RESOURCE_DIR = OUT_DIR+'resources/'
 	BOKEH_DIR    = '/'.join(os.path.realpath(__file__).split('/')[:-1])+'/plotting_resources/'
-	BOKEH_FILES  = ["bokeh-0.12.6.min.css","bokeh-0.12.6.min.js"]
+	BOKEH_FILES  = ["bokeh-0.12.16.min.css","bokeh-0.12.16.min.js"]
 	makedir(RESOURCE_DIR)
 	for n in BOKEH_FILES:
 		exe('cp '+BOKEH_DIR+n+' '+RESOURCE_DIR+n)
